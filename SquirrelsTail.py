@@ -1,4 +1,6 @@
 import pygame as pg
+from settings import *
+from sprites import *
 
 
 class SquirrelGame:
