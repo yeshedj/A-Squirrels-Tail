@@ -25,7 +25,7 @@ def find_frame_dimensions(sprite_sheet):
 
     return frame_width, frame_height
 
-class Squirrel(pygame.sprite.Sprite):
+class Squirrel(pg.sprite.Sprite):
     def __init__(self, sprite_sheet):
         super().__init__()
         self.sprite_sheet = sprite_sheet
@@ -38,28 +38,28 @@ class Squirrel(pygame.sprite.Sprite):
         self.rect.y = 100  # Initial y position
         self.speed = 5  # Movement speed
         self.animation_speed = 0.1  # Animation speed (delay between frames)
-        self.last_update = pygame.time.get_ticks()
+        self.last_update = pg.time.get_ticks()
 
     def extract_frames(self):
         frames = []
         sheet_width, sheet_height = self.sprite_sheet.get_size()
         for y in range(0, sheet_height, self.frame_height):
             for x in range(0, sheet_width, self.frame_width):
-                frame_rect = pygame.Rect(x, y, self.frame_width, self.frame_height)
+                frame_rect = pg.Rect(x, y, self.frame_width, self.frame_height)
                 frame = self.sprite_sheet.subsurface(frame_rect)
                 frames.append(frame)
         return frames
 
     def update(self):
         # Move the squirrel horizontally
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        keys = pg.key.get_pressed()
+        if keys[pg.K_LEFT]:
             self.rect.x -= self.speed
-        if keys[pygame.K_RIGHT]:
+        if keys[pg.K_RIGHT]:
             self.rect.x += self.speed
 
         # Animation
-        now = pygame.time.get_ticks()
+        now = pg.time.get_ticks()
         if now - self.last_update > self.animation_speed * 1000:  # Convert to milliseconds
             self.last_update = now
             self.frame_index = (self.frame_index + 1) % len(self.frames)

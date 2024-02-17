@@ -6,10 +6,10 @@ pygame.init()
 SCREEN = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Menu")
 
-BG = pygame.image.load("/Users/ramatoulaye/Downloads/SquirrelBackground.png")
+BG = pygame.image.load("SquirrelBackground.png")
 
 def get_font(size): # Returns Press-Start-2P in the desired size
-    return pygame.font.SysFont("Pixel/Bitmap", size)
+    return pygame.font.SysFont("Times New Roman", size)
 
 def play():
     while True:
@@ -43,7 +43,7 @@ def main_menu():
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
+        MENU_TEXT = get_font(100).render("A SQUIRREL'S TAIL", True, "#b68f40")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
         PLAY_BUTTON = Button(image=pygame.image.load("PlayGameButton.JPG"), pos=(640, 250), 
