@@ -112,10 +112,7 @@ class Squirrel():
             if self.rect.colliderect(platform):
                 if self.vel_y > 0:  # If falling
                     self.rect.bottom = platform.top
-                    self.vel_y = 0
-
-
-
+                    self.vel_y = -20
 
         # Check collision with ground
         if self.rect.bottom + dy > SCREEN_HEIGHT - 80:
