@@ -8,6 +8,10 @@ pygame.init()
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 750
 
+
+
+
+
 # Create game window
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("A Squirrel's Tail")
@@ -55,7 +59,7 @@ def draw_clouds(cloud_list, images):
         # platform.rect = platform.get_rect()
         # platform.rect.center = (200, 220)
         window.blit(image, (cloud_list[j][0], cloud_list[j][1]))
-        pygame.draw.rect(window, 'grey', platform)
+        # pygame.draw.rect(window, 'grey', platform)
         platforms.append(platform)
 
     return platforms
@@ -134,7 +138,7 @@ class Squirrel():
 
     def draw(self):
         window.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.x - 215, self.rect.y - 150))
-        pygame.draw.rect(window, WHITE, self.rect, 2)
+        # pygame.draw.rect(window, WHITE, self.rect, 2)
 
 
 
