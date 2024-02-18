@@ -2,10 +2,7 @@ import pygame, sys
 from SquirrelsButtons import Button
 # import ptext
 
-
-
 pygame.init()
-
 
 SCREEN = pygame.display.set_mode((1400, 750))
 
@@ -89,4 +86,5 @@ def main_menu():
         pygame.display.update()
 
 main_menu()
+
 
