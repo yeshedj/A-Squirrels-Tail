@@ -7,8 +7,6 @@ is_jumping = False
 SCROLL_THRESH = 200
 scroll = 0
 
-
-
 # Initialize Pygame
 def initialize_pygame():
     pygame.init()

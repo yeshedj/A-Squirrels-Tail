@@ -1,5 +1,7 @@
-import pygame
+import pygame, sys
 import random
+from SquirrelsButtons import Button
+from SquirrelsTail import SCREEN, get_font
 
 # Initialize pygame
 pygame.init()
@@ -27,6 +29,7 @@ MAX_PLATFORMS = 10
 scroll = 0
 bg_scroll = 0
 
+
 # Define colors
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -35,7 +38,11 @@ RED = (255, 0, 0)
 squirrel_img = pygame.image.load("LoverBoy.png").convert_alpha()
 image = pygame.image.load("Bg Squirrel.png").convert_alpha()
 bg_image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
-# cloud_img = pygame.image.load("Cloud.png").convert_alpha()
+quit_button = Button(image=pygame.image.load("QuitGameButton.png"), pos=(1200, 400),
+                         text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+
+
+cloud_img = pygame.image.load("Cloud.png").convert_alpha()
 image2 = pygame.image.load("rolling bg.png").convert_alpha()
 roll_bg = pygame.transform.scale(image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -63,6 +70,7 @@ def draw_clouds(cloud_list, images):
         platforms.append(platform)
 
     return platforms
+
 
 # Squirrel class
 class Squirrel():
@@ -193,9 +201,19 @@ LoverBoy = Squirrel(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 150)
 #     platform = Platform(p_x, p_y, p_w)
 #     platform_group.add(platform)
 
-# Game loop
-run = True
-while run:
+def main_menu():
+
+#game loops
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif quit_button.checkForInput(pygame.mouse.get_pos()):
+                pygame.quit()
+                sys.exit()
+            quit_button.update(SCREEN)
+
 
     clock.tick(FPS)
 
@@ -231,10 +249,9 @@ while run:
     # platform_group.draw(window)
     LoverBoy.draw()
 
-    # event handler
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
+#event handling
+
+    
 
     
     # Update display window
