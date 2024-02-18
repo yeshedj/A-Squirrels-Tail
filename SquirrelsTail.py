@@ -1,14 +1,6 @@
 import pygame, sys
 from SquirrelsButtons import Button
-
-# class Squirrel(pygame.sprite.Sprite):
-#     def __init__(self, picture_path):
-#         super().__init__()
-#         self.image = pygame.image.load(picture_path)
-#         self.rect = self.image.get_rect()
-#     def update(self):
-#         self.rect.center = pygame.mouse.get_pos()
-
+# import ptext
 
 
 
@@ -17,7 +9,7 @@ pygame.init()
 
 SCREEN = pygame.display.set_mode((1400, 750))
 
-pygame.display.set_caption("Menu")
+pygame.display.set_caption("Squirrel's Tail")
 
 original_BG = pygame.image.load("love is in the air.png")
 BG = pygame.transform.scale(original_BG, (1400, 750))
@@ -41,7 +33,7 @@ def play():
 
         SCREEN.fill("black")
 
-        PLAY_TEXT = get_font(45).render("This is the PLAY screen.", True, "White")
+        PLAY_TEXT = get_font(45).render("This is the PLAY screen LALALALALALALA.", True, "White")
         PLAY_RECT = PLAY_TEXT.get_rect(center=(700, 260))
         SCREEN.blit(PLAY_TEXT, PLAY_RECT)
 
@@ -69,8 +61,8 @@ def main_menu():
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        MENU_TEXT = get_font(100).render("A SQUIRREL'S TAIL", True, "#b68f40")
-        MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
+        MENU_TEXT = get_font(80).render("A SQUIRREL'S TAIL", True, "#b68f40")
+        MENU_RECT = MENU_TEXT.get_rect(center=(700, 180))
 
         PLAY_BUTTON = Button(image=pygame.image.load("PlayGameButton.JPG"), pos=(200, 400),
                             text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
