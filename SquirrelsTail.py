@@ -6,11 +6,16 @@ import random
 pygame.init()
 
 
+pygame.mixer.init()
+pygame.mixer.music.load("fun.mp3")
+# pygame.mixer.music.load("Untitled/cottage.mp3")
+
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 750
 
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Squirrel's Tail")
+
 
 
 cursor_image = pygame.image.load("cursor.png")
