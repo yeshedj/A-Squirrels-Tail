@@ -1,69 +1,70 @@
 import pygame, sys
 from SquirrelsButtons import Button
 
+
 pygame.init()
+
 
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 750
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Squirrel's Tail")
 
-original_BG = pygame.image.load("love is in the air.png")
-BG = pygame.transform.scale(original_BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+cursor_image = pygame.image.load("cursor.png")
+CS_IMG = pygame.transform.scale(cursor_image, (90, 70))
+pygame.mouse.set_visible(False)
 
 
-# cursor_image = pygame.image.load("cursor.png")
-# pygame.mouse.set_visible(False)
-
-
-def get_font(size):  # Returns Press-Start-2P in the desired size
+def get_font(size):
     return pygame.font.SysFont("papyrus", size)
 
 
 def main_menu():
+    original_bg = pygame.image.load("love is in the air.png")
+    bg = pygame.transform.scale(original_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    menu_text = get_font(80).render("A SQUIRREL'S TAIL", True, "#b68f40")
+    menu_rect = menu_text.get_rect(center=(700, 180))
+
+    play_button = Button(image=pygame.image.load("PlayGameButton.png"), pos=(200, 400),
+                         text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+    quit_button = Button(image=pygame.image.load("QuitGameButton.png"), pos=(1200, 400),
+                         text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+
     while True:
-        SCREEN.blit(BG, (0, 0))
-
-        MENU_MOUSE_POS = pygame.mouse.get_pos()
-
-        MENU_TEXT = get_font(80).render("A SQUIRREL'S TAIL", True, "#b68f40")
-        MENU_RECT = MENU_TEXT.get_rect(center=(700, 180))
-
-        PLAY_BUTTON = Button(image=pygame.image.load("PlayGameButton.png"), pos=(200, 400),
-                             text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        QUIT_BUTTON = Button(image=pygame.image.load("QuitGameButton.png"), pos=(1200, 400),
-                             text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-
-        SCREEN.blit(MENU_TEXT, MENU_RECT)
-
-        for button in [PLAY_BUTTON, QUIT_BUTTON]:
-            button.changeColor(MENU_MOUSE_POS)
-            button.update(SCREEN)
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if play_button.checkForInput(pygame.mouse.get_pos()):
                     play()
-                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                elif quit_button.checkForInput(pygame.mouse.get_pos()):
                     pygame.quit()
                     sys.exit()
 
-        pygame.display.update()
+            SCREEN.blit(bg, (0, 0))
+
+            play_button.update(SCREEN)
+            quit_button.update(SCREEN)
+
+            SCREEN.blit(menu_text, menu_rect)
+
+            MENU_MOUSE_POS = pygame.mouse.get_pos()
+            SCREEN.blit(CS_IMG, MENU_MOUSE_POS)
+            pygame.display.update()
 
 
 def play():
-    # current_page = 0
-    PLAY_BACK = Button(image=None, pos=(170, 510),
+    play_back = Button(image=None, pos=(170, 510),
                        text_input="BACK", font=get_font(60), base_color="White", hovering_color="Yellow")
-    PLAY_NEXT = Button(image=None, pos=(1200, 510),
+    play_next = Button(image=None, pos=(1200, 510),
                        text_input="NEXT", font=get_font(60), base_color="White", hovering_color="Pink")
 
-    script_BG = pygame.image.load("newScriptBG.png")
-    BG2 = pygame.transform.scale(script_BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    script_bg = pygame.image.load("newScriptBG.png")
+    bg2 = pygame.transform.scale(script_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     message = ["The love of your squirrel life is at the top! Climb up & reunite with your beloved!"]
     font = get_font(35)
@@ -82,13 +83,14 @@ def play():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if PLAY_BACK.checkForInput(pygame.mouse.get_pos()):
+                if play_back.checkForInput(pygame.mouse.get_pos()):
                     main_menu()
-                elif PLAY_NEXT.checkForInput(pygame.mouse.get_pos()):
+                elif play_next.checkForInput(pygame.mouse.get_pos()):
                     next()
 
         # SCREEN.fill("black")
-        SCREEN.blit(BG2, (0, 0))
+        SCREEN.blit(bg2, (0, 0))
+        SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
 
         if counter < speed * len(message[-1]):
             counter += 1
@@ -101,25 +103,31 @@ def play():
 
         SCREEN.blit(text_surface, (text_x, text_y))
 
-        PLAY_BACK.changeColor(pygame.mouse.get_pos())
-        PLAY_BACK.update(SCREEN)
-        PLAY_NEXT.changeColor(pygame.mouse.get_pos())
-        PLAY_NEXT.update(SCREEN)
+        play_back.changeColor(pygame.mouse.get_pos())
+        play_back.update(SCREEN)
+        play_next.changeColor(pygame.mouse.get_pos())
+        play_next.update(SCREEN)
 
         pygame.display.flip()
 
         pygame.time.Clock().tick(60)
 
 
+
+
+
+
+
+
 def next():
 
-    PLAY_BACK2 = Button(image=None, pos=(170, 510),
+    play_back2 = Button(image=None, pos=(170, 510),
                         text_input="BACK", font=get_font(60), base_color="White", hovering_color="Yellow")
-    PLAY_NEXT2 = Button(image=None, pos=(1200, 510),
+    play_next2 = Button(image=None, pos=(1200, 510),
                         text_input="NEXT", font=get_font(60), base_color="White", hovering_color="Pink")
 
-    script_BG = pygame.image.load("newScriptBG.png")
-    BG2 = pygame.transform.scale(script_BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    script_bg = pygame.image.load("newScriptBG.png")
+    bg2 = pygame.transform.scale(script_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     message = ["Use the left & right arrows to navigate, spacebar/up arrow to jump, & don't fall!"]
 
@@ -139,15 +147,16 @@ def next():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if PLAY_BACK2.checkForInput(pygame.mouse.get_pos()):
+                if play_back2.checkForInput(pygame.mouse.get_pos()):
                     play()
-                elif PLAY_NEXT2.checkForInput(pygame.mouse.get_pos()):
+                elif play_next2.checkForInput(pygame.mouse.get_pos()):
                     # script_BG = pygame.image.load("treeTrunk.png")
                     # BG2 = pygame.transform.scale(script_BG,(SCREEN_WIDTH,SCREEN_HEIGHT))
                     gameplay()
 
         # SCREEN.fill("black")
-        SCREEN.blit(BG2, (0, 0))
+        SCREEN.blit(bg2, (0, 0))
+        SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
 
         if counter < speed * len(message[-1]):
             counter += 1
@@ -160,10 +169,10 @@ def next():
 
         SCREEN.blit(text_surface, (text_x, text_y))
 
-        PLAY_BACK2.changeColor(pygame.mouse.get_pos())
-        PLAY_BACK2.update(SCREEN)
-        PLAY_NEXT2.changeColor(pygame.mouse.get_pos())
-        PLAY_NEXT2.update(SCREEN)
+        play_back2.changeColor(pygame.mouse.get_pos())
+        play_back2.update(SCREEN)
+        play_next2.changeColor(pygame.mouse.get_pos())
+        play_next2.update(SCREEN)
 
         pygame.display.flip()
 
@@ -171,10 +180,10 @@ def next():
 
 
 def gameplay():
-        gameplay_BG = pygame.image.load("treeTrunk.png")
-        GPBG = pygame.transform.scale(gameplay_BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        gameplay_bg = pygame.image.load("treeTrunk.png")
+        gp_bg = pygame.transform.scale(gameplay_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-        SCREEN.blit(GPBG, (0, 0))
+        SCREEN.blit(gp_bg, (0, 0))
         pygame.display.flip()
 
         while True:
