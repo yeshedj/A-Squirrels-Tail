@@ -7,8 +7,9 @@ pygame.init()
 
 
 pygame.mixer.init()
-pygame.mixer.music.load("fun.mp3")
-# pygame.mixer.music.load("Untitled/cottage.mp3")
+pygame.mixer.music.load("/Users/yeshej/Documents/CupidJam/Untitled/fun.mp3")
+# pygame.mixer.music.load("/Users/yeshej/Documents/CupidJam/Untitled/cottage.mp3")
+pygame.mixer.music.play(-1)
 
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 750
@@ -28,6 +29,7 @@ def get_font(size):
 
 
 def main_menu():
+    # pygame.mixer.music.play(-1)
     original_bg = pygame.image.load("love is in the air.png")
     bg = pygame.transform.scale(original_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
