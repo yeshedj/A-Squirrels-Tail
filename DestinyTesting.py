@@ -1,326 +1,192 @@
-import pygame, sys
+import pygame
 import random
-from SquirrelsButtons import Button
-from SquirrelsTail import SCREEN, get_font
 
-# Initialize pygame
-pygame.init()
+# Global variables for player state
+ape_speed_y = 0
+is_jumping = False
 
-# Game Window
-SCREEN_WIDTH = 1400
-SCREEN_HEIGHT = 750
+# Initialize Pygame
+def initialize_pygame():
+    pygame.init()
 
 # Create game window
-window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("A Squirrel's Tail")
+def create_game_window(width, height, title):
+    window = pygame.display.set_mode((width, height))
+    pygame.display.set_caption(title)
+    return window
 
-# Set frame rate
-clock = pygame.time.Clock()
-FPS = 60
+# Load game assets
+def load_assets():
+    background_img = pygame.image.load('/Users/destinyosemwengie/Documents/GitHub/CupidJam/rolling bg.png')
+    ape_img = pygame.image.load('/Users/destinyosemwengie/Documents/GitHub/CupidJam/LoverBoy.png')
+    banana_img = pygame.image.load('/Users/destinyosemwengie/Documents/GitHub/CupidJam/Cloud1.png')
+    return background_img, ape_img, banana_img
 
-# Game variables
-SCROLL_THRESH = 200
-GRAVITY = 1
-MAX_PLATFORMS = 10
-scroll = 0
-bg_scroll = 0
+# Draw platforms
+def draw_platforms(window, platforms):
+    for platform in platforms:
+        pygame.draw.rect(window, (139, 69, 19), platform)
 
+# Draw bananas
+def draw_bananas(window, banana_img, bananas):
+    for banana_pos in bananas:
+        window.blit(banana_img, banana_pos)
 
-# Define colors
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
+# Generate random banana positions
+def generate_banana_positions(num_bananas, level_width, level_height, platform_areas, banana_size):
+    bananas = []
+    for _ in range(num_bananas):
+        x = random.randint(0, level_width - banana_size[0])
+        y = random.randint(0, level_height - banana_size[1])
+        banana_rect = pygame.Rect(x, y, banana_size[0], banana_size[1])
+        while any(banana_rect.colliderect(pygame.Rect(platform)) for platform in platform_areas):
+            x = random.randint(0, level_width - banana_size[0])
+            y = random.randint(0, level_height - banana_size[1])
+            banana_rect = pygame.Rect(x, y, banana_size[0], banana_size[1])
+        bananas.append((x, y))
+    return bananas
 
-# Load images
-squirrel_img = pygame.image.load("LoverBoy.png").convert_alpha()
-image = pygame.image.load("Bg Squirrel.png").convert_alpha()
-bg_image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+# Initialize levels
+def initialize_level(level, banana_img):
+    if level == 1:
+        platforms = [(50, 300, 150, 50), (200, 400, 150, 50)]
+        time_limit = 60  # 60 seconds for level 1
+    elif level == 2:
+        platforms = [(100, 350, 150, 50), (300, 200, 150, 50), (550, 450, 150, 50)]
+        time_limit = 50  # 50 seconds for level 2
+    else:
+        platforms = []  # Add more levels with custom platforms and time limits as needed
+        time_limit = 0
+    bananas = generate_banana_positions(10 + 5 * (level - 1), 800, 600, platforms, banana_img.get_size())
+    return platforms, bananas, time_limit
 
-# cloud_img = pygame.image.load("Cloud.png").convert_alpha()
-image2 = pygame.image.load("rolling bg.png").convert_alpha()
-roll_bg = pygame.transform.scale(image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+# Check platform collision
+def check_platform_collision(ape_rect, platforms):
+    global ape_speed_y
+    for platform in platforms:
+        platform_rect = pygame.Rect(platform)
+        if ape_rect.colliderect(platform_rect) and ape_speed_y > 0:
+            if ape_rect.bottom <= platform_rect.top + ape_speed_y:
+                return platform_rect.top
+    return None
 
-#quit button and pink arrow to access quit button
+# Apply gravity to ape
+def apply_gravity(ape_position, platforms, ape_img):
+    global ape_speed_y, is_jumping
+    ape_position[1] += ape_speed_y
+    ape_speed_y += 1
+    ape_rect = pygame.Rect(ape_position[0], ape_position[1], ape_img.get_width(), ape_img.get_height())
+    collision_y = check_platform_collision(ape_rect, platforms)
+    if collision_y is not None:
+        ape_position[1] = collision_y - ape_img.get_height()
+        is_jumping = False
+        ape_speed_y = 0
+    elif ape_position[1] >= 500:
+        ape_position[1] = 500
+        is_jumping = False
+        ape_speed_y = 0
 
-cursor_image = pygame.image.load("cursor.png")
-CS_IMG = pygame.transform.scale(cursor_image, (90, 70))
-pygame.mouse.set_visible(False)
+# Handle player input
+def handle_events():
+    global is_jumping, ape_speed_y
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            return False, None
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        return True, 'left'
+    elif keys[pygame.K_RIGHT]:
+        return True, 'right'
+    elif keys[pygame.K_SPACE] and not is_jumping:
+        is_jumping = True
+        ape_speed_y = -20
+        return True, None
+    return True, None
 
-# Function to draw background
-def draw_bg(bg_scroll):
+# Update ape position
+def update_ape_position(ape_position, direction, speed, ape_width):
+    if direction == 'left':
+        ape_position[0] = max(0, ape_position[0] - speed)
+    elif direction == 'right':
+        ape_position[0] = min(800 - ape_width, ape_position[0] + speed)
 
-    window.blit(bg_image, (0, 0 + bg_scroll))
-    window.blit(roll_bg, (0, -650 + bg_scroll))
+# Collect bananas
+def collect_bananas(ape_position, bananas, score, ape_size, banana_size):
+    ape_rect = pygame.Rect(ape_position[0], ape_position[1], ape_size[0], ape_size[1])
+    for banana in bananas[:]:
+        banana_rect = pygame.Rect(banana[0], banana[1], banana_size[0], banana_size[1])
+        if ape_rect.colliderect(banana_rect):
+            bananas.remove(banana)
+            score += 10
+    return score
 
-clouds = [[500, 100, 1], [750, 330, 2], [350, 450, 3]]
-cloud_images = []
-for i in range(1, 4):
-    img = pygame.image.load(f'Cloud{i}.png')
-    cloud_images.append(img)
+# Update the timer
+def update_timer(start_time, time_limit):
+    current_time = pygame.time.get_ticks()
+    elapsed_time = (current_time - start_time) // 1000
+    remaining_time = max(time_limit - elapsed_time, 0)
+    return remaining_time
 
-def draw_clouds(cloud_list, images):
-    platforms = []
-    for j in range(len(cloud_list)):
-        image = images[cloud_list[j][2] - 1]
-        image = pygame.transform.scale(image, (450, 250))
-        platform = pygame.rect.Rect((cloud_list[j][0] + 165, cloud_list[j][1] + 120), (120, 20))
-        # platform.rect = platform.get_rect()
-        # platform.rect.center = (200, 220)
-        window.blit(image, (cloud_list[j][0], cloud_list[j][1]))
-        pygame.draw.rect(window, 'grey', platform)
-        platforms.append(platform)
+# Draw game screen
+def draw(window, background_img, ape_img, banana_img, platforms, bg_x, ape_position, bananas, font, remaining_time, score):
+    window.blit(background_img, (bg_x, 0))
+    window.blit(background_img, (bg_x + 800, 0))
+    draw_platforms(window, platforms)
+    draw_bananas(window, banana_img, bananas)
+    window.blit(ape_img, ape_position)
 
-    return platforms
+    # Displaying the score
+    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+    window.blit(score_text, (10, 10))  # Display at the top left corner
 
-#function for the quit button
-def quit():
-    quit_button = Button(image=pygame.image.load("QuitGameButton.png"), pos=(50, 50),
-                         text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+    # Display the timer
+    timer_text = font.render(f"Time left: {remaining_time}s", True, (255, 255, 255))
+    window.blit(timer_text, (650, 10))
 
-    play_back2 = Button(image=None, pos=(170, 510),
-                        text_input="BACK", font=get_font(60), base_color="White", hovering_color="Yellow")
-    play_next2 = Button(image=None, pos=(1200, 510),
-                        text_input="NEXT", font=get_font(60), base_color="White", hovering_color="Pink")
+# Main game function
+def main():
+    initialize_pygame()
+    window = create_game_window(800, 600, "Jungle Adventure")
+    background_img, ape_img, banana_img = load_assets()
+    font = pygame.font.SysFont(None, 36)
+    bg_x = 0
+    current_level = 1
+    platforms, bananas, time_limit = initialize_level(current_level, banana_img)
+    global ape_speed_y, is_jumping
+    ape_position = [100, 500]
+    ape_speed = 5
+    score = 0
+    start_time = pygame.time.get_ticks()
+    clock = pygame.time.Clock()
 
-    script_bg = pygame.image.load("newScriptBG.png")
-    bg2 = pygame.transform.scale(script_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    running = True
+    while running:
+        running, direction = handle_events()
+        if not running:
+            break
 
-    message = ["Use the left & right arrows to navigate, spacebar/up arrow to jump, & don't fall!"]
+        update_ape_position(ape_position, direction, ape_speed, ape_img.get_width())
+        apply_gravity(ape_position, platforms, ape_img)
+        score = collect_bananas(ape_position, bananas, score, ape_img.get_size(), banana_img.get_size())
+        remaining_time = update_timer(start_time, time_limit)
 
-    font = get_font(35)
+        if remaining_time == 0 or len(bananas) == 0:
+            current_level += 1
+            platforms, bananas, time_limit = initialize_level(current_level, banana_img)
+            if time_limit == 0:  # No more levels
+                print(f"Game Over! Final Score: {score}")
+                break
+            start_time = pygame.time.get_ticks()
 
-    text_width, text_height = font.size(message[0])
-    text_x = (SCREEN_WIDTH - text_width) // 2
-    text_y = (SCREEN_HEIGHT - text_height) // 2
+        bg_x -= 2
+        if bg_x <= -800:
+            bg_x = 0
 
-    speed = 2
-    counter = 0
-    done = False
-
-    while not done:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if play_back2.checkForInput(pygame.mouse.get_pos()):
-                    play()
-                elif play_next2.checkForInput(pygame.mouse.get_pos()):
-                    # script_BG = pygame.image.load("treeTrunk.png")
-                    # BG2 = pygame.transform.scale(script_BG,(SCREEN_WIDTH,SCREEN_HEIGHT))
-                    gameplay(SCREEN)
-
-        # SCREEN.fill("black")
-        SCREEN.blit(bg2, (0, 0))
-        # SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
-
-        if counter < speed * len(message[-1]):
-            counter += 1
-
-        text_to_render = "".join([line[:counter // speed] for line in message])
-        text_surface = font.render(text_to_render, True, "white")
-
-        if text_surface.get_width() > SCREEN_WIDTH - 20:  # 20 pixels padding
-            text_y += font.get_linesize()
-
-        SCREEN.blit(text_surface, (text_x, text_y))
-
-        play_back2.changeColor(pygame.mouse.get_pos())
-        play_back2.update(SCREEN)
-        play_next2.changeColor(pygame.mouse.get_pos())
-        play_next2.update(SCREEN)
-
-        SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
-
+        draw(window, background_img, ape_img, banana_img, platforms, bg_x, ape_position, bananas, font, remaining_time, score)
         pygame.display.flip()
+        clock.tick(60)  # Maintain 60 FPS
 
-        pygame.time.Clock().tick(60)
+    pygame.quit()
 
-
-# Squirrel class
-class Squirrel():
-    def __init__(self, x, y):
-        self.image = pygame.transform.scale(squirrel_img, (550, 450))
-        self.width = 120
-        self.height = 140
-        self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.center = (x, y)
-        self.vel_y = 0
-        self.flip = False
-
-    def move(self):
-        # Reset variables
-        scroll = 0
-        dx = 0
-        dy = 0
-
-        # Process keypresses
-        key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
-            dx = -10
-            self.flip = True
-        if key[pygame.K_RIGHT]:
-            dx = 10
-            self.flip = False
-
-        # Gravity
-        self.vel_y += GRAVITY
-        dy += self.vel_y
-        
-
-        # Ensure squirrel doesn't go off the edge of the window
-        if self.rect.left + dx < 0:
-            dx = -self.rect.left
-        if self.rect.right + dx > SCREEN_WIDTH:
-            dx = SCREEN_WIDTH - self.rect.right
-
-        # Check collision with clouds
-        # for platform in cloud_platforms:
-        #     # Collision in the y direction
-        #     if platform.rect.colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
-        #         # Check if above the platform
-        #         if self.rect.bottom < platform.rect.centery:
-        #             if self.vel_y > 0:
-        #                 self.rect.bottom = platform.rect.top
-        #                 dy = 0
-        #                 self.vel_y = -20
-        cloud_platforms = draw_clouds(clouds, cloud_images)
-        for platform in cloud_platforms:
-            if self.rect.colliderect(platform):
-                if self.vel_y > 0:  # If falling
-                    self.rect.bottom = platform.top
-                    self.vel_y = -20
-
-        # Check collision with ground
-        if self.rect.bottom + dy > SCREEN_HEIGHT - 80:
-            dy = 0
-            self.vel_y = -20
-
-        # Check if squirrel has bounced to the top of the screen
-        if self.rect.top <= SCROLL_THRESH:
-            # if player is jumping
-            if self.vel_y < 0:
-                scroll = -dy
-
-
-        # Update rectangle position
-        self.rect.x += dx
-        self.rect.y += dy + scroll
-
-        return scroll
-
-    def draw(self):
-        window.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.x - 215, self.rect.y - 150))
-        pygame.draw.rect(window, WHITE, self.rect, 2)
-
-
-
-# Platform class
-# class Platform(pygame.sprite.Sprite):
-#     def __init__(self, x, y, width):
-#         pygame.sprite.Sprite.__init__(self)
-#         self.image = pygame.transform.scale(cloud_img, (width, 500))
-#         self.rect = self.image.get_rect()
-#         self.rect.center = (x, y)
-#         self.rect.x = x
-#         self.rect.y = y
-
-#     def update(self, scroll):
-#         # Update platform's vertical position
-#         self.rect.y += scroll
-
-#         # Check if platform has gone off the screen
-#         if self.rect.top > SCREEN_HEIGHT: 
-#             self.kill()
-
-#     def draw(self):
-#         window.blit(self.image, self.rect)
-#         pygame.draw.rect(window, RED, self.rect)
-
-    # def __init__(self, x, y):
-    #     self.image = pygame.transform.scale(squirrel_img, (550, 450))
-    #     self.width = 120
-    #     self.height = 140
-    #     self.rect = pygame.Rect(0, 0, self.width, self.height)
-    #     self.rect.center = (x, y)
-
-
-
-# Squirrel instance
-LoverBoy = Squirrel(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 150)
-
-#Create sprite groups
-# platform_group = pygame.sprite.Group()
-
-# Create starting platform
-# platform = Platform(SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 50, 75)
-# platform_group.add(platform)
-
-
-
-# Create temporary clouds
-# for p in range(MAX_PLATFORMS):
-#     p_w = random.randint(350, 700)
-#     p_x = random.randint(0, SCREEN_WIDTH - p_w)
-#     p_y = p * random.randint(80, 120)
-#     platform = Platform(p_x, p_y, p_w)
-#     platform_group.add(platform)
-
-def main_menu():
-    quit_button = Button(image=pygame.image.load("QuitGameButton.png"), pos=(1200, 400),
-                         text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-
-#game loops
-    run = True
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            elif quit_button.checkForInput(pygame.mouse.get_pos()):
-                pygame.quit()
-                sys.exit()
-            quit_button.update(SCREEN)
-
-
-    clock.tick(FPS)
-
-    scroll = LoverBoy.move()
-
-    # Draw backgroung
-    bg_scroll += scroll
-    if bg_scroll >= 650:
-        bg_scroll = 25
-    draw_bg(bg_scroll)
-
-    # Draw temporary scroll threshold
-    # pygame.draw.line(window, WHITE, (0, SCROLL_THRESH), (SCREEN_WIDTH, SCROLL_THRESH))
-
-    # Generate platforms
-    cloud_platforms = draw_clouds(clouds, cloud_images)
-
-    # Collision with platforms
-
-    
-
-
-    # if len(platform_group) < MAX_PLATFORMS:
-    #     p_w = random.randint(350, 700)
-    #     p_x = random.randint(0, SCREEN_WIDTH - p_w)
-    #     p_y = platform.rect.y - random.randint(80, 120)
-    #     platform = Platform(p_x, p_y, p_w)
-    #     platform_group.add(platform)
-    # # Update platforms
-    # platform_group.update(scroll)
-
-    # # Draw sprites
-    # platform_group.draw(window)
-    LoverBoy.draw()
-
-#event handling
-
-    
-
-    
-    # Update display window
-    pygame.display.update()
-
-pygame.quit()
+if __name__ == "__main__":
+    main()

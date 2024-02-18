@@ -7,9 +7,9 @@ pygame.init()
 
 
 pygame.mixer.init()
-pygame.mixer.music.load("/Users/yeshej/Documents/CupidJam/Untitled/fun.mp3")
+# pygame.mixer.music.load("/Users/yeshej/Documents/CupidJam/Untitled/fun.mp3")
 # pygame.mixer.music.load("/Users/yeshej/Documents/CupidJam/Untitled/cottage.mp3")
-pygame.mixer.music.play(-1)
+# pygame.mixer.music.play(-1)
 
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 750
