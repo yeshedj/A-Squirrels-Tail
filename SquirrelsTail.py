@@ -1,5 +1,6 @@
 import pygame, sys
 from SquirrelsButtons import Button
+import random
 
 
 pygame.init()
@@ -77,6 +78,7 @@ def play():
     counter = 0
     done = False
 
+
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -88,9 +90,7 @@ def play():
                 elif play_next.checkForInput(pygame.mouse.get_pos()):
                     next()
 
-        # SCREEN.fill("black")
         SCREEN.blit(bg2, (0, 0))
-        SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
 
         if counter < speed * len(message[-1]):
             counter += 1
@@ -107,6 +107,9 @@ def play():
         play_back.update(SCREEN)
         play_next.changeColor(pygame.mouse.get_pos())
         play_next.update(SCREEN)
+
+        SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
+
 
         pygame.display.flip()
 
@@ -152,7 +155,7 @@ def next():
                 elif play_next2.checkForInput(pygame.mouse.get_pos()):
                     # script_BG = pygame.image.load("treeTrunk.png")
                     # BG2 = pygame.transform.scale(script_BG,(SCREEN_WIDTH,SCREEN_HEIGHT))
-                    gameplay()
+                    gameplay(SCREEN)
 
         # SCREEN.fill("black")
         SCREEN.blit(bg2, (0, 0))
@@ -174,27 +177,216 @@ def next():
         play_next2.changeColor(pygame.mouse.get_pos())
         play_next2.update(SCREEN)
 
+        SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
+
         pygame.display.flip()
 
         pygame.time.Clock().tick(60)
 
 
-def gameplay():
-        gameplay_bg = pygame.image.load("treeTrunk.png")
-        gp_bg = pygame.transform.scale(gameplay_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+def gameplay(SCREEN):
 
-        SCREEN.blit(gp_bg, (0, 0))
-        pygame.display.flip()
 
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    break
+    SCREEN_WIDTH = 1400
+    SCREEN_HEIGHT = 750
 
-            pygame.time.Clock().tick(60)
+    # Create game window
+    # SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    # pygame.display.set_caption("A Squirrel's Tail")
+
+    # Set frame rate
+    clock = pygame.time.Clock()
+    FPS = 60
+
+    # Game variables
+    SCROLL_THRESH = 200
+    GRAVITY = 1
+    MAX_PLATFORMS = 10
+    scroll = 0
+    bg_scroll = 0
+
+    # Define colors
+    WHITE = (255, 255, 255)
+    RED = (255, 0, 0)
+
+    # Load images
+    squirrel_img = pygame.image.load("LoverBoy.png").convert_alpha()
+    image = pygame.image.load("Bg Squirrel.png").convert_alpha()
+    bg_image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    cloud_img = pygame.image.load("Cloud.png").convert_alpha()
+    image2 = pygame.image.load("rolling bg.png").convert_alpha()
+    roll_bg = pygame.transform.scale(image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    # Function to draw background
+    def draw_bg(bg_scroll):
+        SCREEN.blit(bg_image, (0, 0 + bg_scroll))
+        SCREEN.blit(roll_bg, (0, -650 + bg_scroll))
+
+    # Squirrel class
+    class Squirrel():
+        def __init__(self, x, y):
+            self.image = pygame.transform.scale(squirrel_img, (550, 450))
+            self.width = 120
+            self.height = 140
+            self.rect = pygame.Rect(0, 0, self.width, self.height)
+            self.rect.center = (x, y)
+            self.vel_y = 0
+            self.flip = False
+
+        def move(self):
+            # Reset variables
+            scroll = 0
+            dx = 0
+            dy = 0
+
+            # Process keypresses
+            key = pygame.key.get_pressed()
+            if key[pygame.K_LEFT]:
+                dx = -10
+                self.flip = True
+            if key[pygame.K_RIGHT]:
+                dx = 10
+                self.flip = False
+
+            # Gravity
+            self.vel_y += GRAVITY
+            dy += self.vel_y
+
+            # Ensure squirrel doesn't go off the edge of the window
+            if self.rect.left + dx < 0:
+                dx = -self.rect.left
+            if self.rect.right + dx > SCREEN_WIDTH:
+                dx = SCREEN_WIDTH - self.rect.right
+
+            # Check collision with clouds
+            for platform in platform_group:
+                # Collision in the y direction
+                if platform.rect.colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                    # Check if above the platform
+                    if self.rect.bottom < platform.rect.centery:
+                        if self.vel_y > 0:
+                            self.rect.bottom = platform.rect.top
+                            dy = 0
+                            self.vel_y = -20
+
+            # Check collision with ground
+            if self.rect.bottom + dy > SCREEN_HEIGHT + 20:
+                dy = 0
+                self.vel_y = -20
+
+            # Check if squirrel has bounced to the top of the screen
+            if self.rect.top <= SCROLL_THRESH:
+                # if player is jumping
+                if self.vel_y < 0:
+                    scroll = -dy
+
+            # Update rectangle position
+            self.rect.x += dx
+            self.rect.y += dy + scroll
+
+            return scroll
+
+        def draw(self):
+            SCREEN.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.x - 215, self.rect.y - 150))
+            pygame.draw.rect(SCREEN, WHITE, self.rect, 2)
+
+    # Platform class
+    class Platform(pygame.sprite.Sprite):
+        def __init__(self, x, y, width):
+            pygame.sprite.Sprite.__init__(self)
+            self.image = pygame.transform.scale(cloud_img, (width, 500))
+            self.rect = self.image.get_rect()
+            self.rect.center = (x, y)
+            self.rect.x = x
+            self.rect.y = y
+
+        def update(self, scroll):
+            # Update platform's vertical position
+            self.rect.y += scroll
+
+            # Check if platform has gone off the screen
+            if self.rect.top > SCREEN_HEIGHT:
+                self.kill()
+
+        def draw(self):
+            SCREEN.blit(self.image, self.rect)
+            pygame.draw.rect(SCREEN, RED, self.rect)
+
+    # Squirrel instance
+    LoverBoy = Squirrel(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 150)
+
+    # Create sprite groups
+    platform_group = pygame.sprite.Group()
+    # platform = None
+
+
+    # Create temporary clouds
+    for p in range(MAX_PLATFORMS):
+        p_w = random.randint(350, 700)
+        p_x = random.randint(0, SCREEN_WIDTH - p_w)
+        p_y = p * random.randint(80, 120)
+        platform = Platform(p_x, p_y, p_w)
+        platform_group.add(platform)
+
+    # Game loop
+    run = True
+    while run:
+        clock.tick(FPS)
+
+        scroll = LoverBoy.move()
+
+        # Draw background
+        bg_scroll += scroll
+        if bg_scroll >= 650:
+            bg_scroll = 25
+        draw_bg(bg_scroll)
+
+        # Generate platforms
+        if len(platform_group) < MAX_PLATFORMS:
+            p_w = random.randint(350, 700)
+            p_x = random.randint(0, SCREEN_WIDTH - p_w)
+            p_y = platform.rect.y - random.randint(80, 120)
+            platform = Platform(p_x, p_y, p_w)
+            platform_group.add(platform)
+
+        # Update platforms
+        platform_group.update(scroll)
+
+        # Draw sprites
+        platform_group.draw(SCREEN)
+        LoverBoy.draw()
+
+        # Event handler
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        # Update display window
+        pygame.display.update()
+
+    pygame.quit()
+
+
+# Call the main menu function to start the game
+
+
+        # gameplay_bg = pygame.image.load("Bg Squirrel.png")
+        # gp_bg = pygame.transform.scale(gameplay_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        #
+        # SCREEN.blit(gp_bg, (0, 0))
+        # SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
+        #
+        # pygame.display.flip()
+        #
+        # while True:
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             pygame.quit()
+        #             sys.exit()
+        #         elif event.type == pygame.MOUSEBUTTONDOWN:
+        #             break
+        #
+        #     pygame.time.Clock().tick(60)
 
 
 main_menu()
