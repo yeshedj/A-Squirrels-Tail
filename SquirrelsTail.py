@@ -8,7 +8,6 @@ from SquirrelsButtons import Button
 #         self.rect = self.image.get_rect()
 #     def update(self):
 #         self.rect.center = pygame.mouse.get_pos()
-#
 
 
 
