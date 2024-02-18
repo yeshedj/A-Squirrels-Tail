@@ -7,12 +7,15 @@ pygame.init()
 # Set up the display
 screen_width, screen_height = 800, 600
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption('Catching Falling Objects')
+pygame.display.set_caption('Hearts to Lovers')
 
 # Define colors and game properties
 background_color = (255, 255, 255)
+
+player_image = pygame.image.load("LoverBoy.png").convert_alpha()
+
 object_color = (255, 0, 0)
-player_color = (0, 0, 255)
+#player_color = (0, 0, 255)
 object_size, player_size = 50, 50
 object_x = random.randint(0, screen_width - object_size)
 object_y = 0
@@ -59,8 +62,10 @@ while running:
 
     # Drawing objects and score
     screen.fill(background_color)
+    screen.blit(player_image)
+    
     pygame.draw.rect(screen, object_color, (object_x, object_y, object_size, object_size))
-    pygame.draw.rect(screen, player_color, (player_x, player_y, player_size, player_size))
+    #pygame.draw.rect(screen, player_color, (player_x, player_y, player_size, player_size))
     if not is_paused:
         text = font.render("Score: " + str(score), True, (0, 0, 0))
         screen.blit(text, (10, 10))
