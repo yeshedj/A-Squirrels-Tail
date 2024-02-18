@@ -64,9 +64,9 @@ def main_menu():
         MENU_TEXT = get_font(80).render("A SQUIRREL'S TAIL", True, "#b68f40")
         MENU_RECT = MENU_TEXT.get_rect(center=(700, 180))
 
-        PLAY_BUTTON = Button(image=pygame.image.load("PlayGameButton.JPG"), pos=(200, 400),
+        PLAY_BUTTON = Button(image=pygame.image.load("PlayGameButton.png"), pos=(200, 400),
                             text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
-        QUIT_BUTTON = Button(image=pygame.image.load("QuitGameButton.JPG"), pos=(1200, 400),
+        QUIT_BUTTON = Button(image=pygame.image.load("QuitGameButton.png"), pos=(1200, 400),
                             text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
         SCREEN.blit(MENU_TEXT, MENU_RECT)
