@@ -5,11 +5,13 @@ import random
 
 pygame.init()
 
+click = pygame.mixer.Sound("wink.mp3")
+# typing = pygame.mixer.Sound("typing.mp3")
+
 
 pygame.mixer.init()
-# pygame.mixer.music.load("/Users/yeshej/Documents/CupidJam/Untitled/fun.mp3")
-# pygame.mixer.music.load("/Users/yeshej/Documents/CupidJam/Untitled/cottage.mp3")
-# pygame.mixer.music.play(-1)
+pygame.mixer.music.load("/Users/yeshej/Documents/CupidJam/Untitled/fun.mp3")
+pygame.mixer.music.play(-1)
 
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 750
@@ -18,9 +20,9 @@ SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Squirrel's Tail")
 
 
-
 cursor_image = pygame.image.load("cursor.png")
 CS_IMG = pygame.transform.scale(cursor_image, (90, 70))
+
 pygame.mouse.set_visible(False)
 
 
@@ -47,6 +49,7 @@ def main_menu():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                click.play()
                 if play_button.checkForInput(pygame.mouse.get_pos()):
                     play()
                 elif quit_button.checkForInput(pygame.mouse.get_pos()):
@@ -62,13 +65,14 @@ def main_menu():
 
             MENU_MOUSE_POS = pygame.mouse.get_pos()
             SCREEN.blit(CS_IMG, MENU_MOUSE_POS)
+
             pygame.display.update()
 
 
 def play():
     play_back = Button(image=None, pos=(170, 510),
                        text_input="BACK", font=get_font(60), base_color="White", hovering_color="Yellow")
-    play_next = Button(image=None, pos=(1200, 510),
+    play_next = Button(image=None, pos=(1190, 510),
                        text_input="NEXT", font=get_font(60), base_color="White", hovering_color="Pink")
 
     script_bg = pygame.image.load("newScriptBG.png")
@@ -83,19 +87,26 @@ def play():
 
     speed = 2
     counter = 0
-    done = False
+    # done = False
+
+    # typing.play()
 
 
-    while not done:
+    # while not done:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_back.checkForInput(pygame.mouse.get_pos()):
+                    click.play()
                     main_menu()
+                    # typing.stop()
                 elif play_next.checkForInput(pygame.mouse.get_pos()):
+                    click.play()
                     next()
+                    # typing.stop()
 
         SCREEN.blit(bg2, (0, 0))
 
@@ -117,7 +128,6 @@ def play():
 
         SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
 
-
         pygame.display.flip()
 
         pygame.time.Clock().tick(60)
@@ -133,8 +143,8 @@ def next():
 
     play_back2 = Button(image=None, pos=(170, 510),
                         text_input="BACK", font=get_font(60), base_color="White", hovering_color="Yellow")
-    play_next2 = Button(image=None, pos=(1200, 510),
-                        text_input="NEXT", font=get_font(60), base_color="White", hovering_color="Pink")
+    play_next2 = Button(image=None, pos=(1190, 510),
+                        text_input="START", font=get_font(60), base_color="White", hovering_color="Pink")
 
     script_bg = pygame.image.load("newScriptBG.png")
     bg2 = pygame.transform.scale(script_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -149,20 +159,29 @@ def next():
 
     speed = 2
     counter = 0
-    done = False
+    # done = False
 
-    while not done:
+    # typing.play()
+
+    # while not done:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_back2.checkForInput(pygame.mouse.get_pos()):
+                    click.play()
                     play()
+                    # typing.stop()
                 elif play_next2.checkForInput(pygame.mouse.get_pos()):
                     # script_BG = pygame.image.load("treeTrunk.png")
                     # BG2 = pygame.transform.scale(script_BG,(SCREEN_WIDTH,SCREEN_HEIGHT))
+                    click.play()
                     gameplay(SCREEN)
+                    # typing.stop()
+
+
 
         # SCREEN.fill("black")
         SCREEN.blit(bg2, (0, 0))
@@ -189,6 +208,10 @@ def next():
         pygame.display.flip()
 
         pygame.time.Clock().tick(60)
+    #     if counter >= speed * len(message[-1]):
+    #         break
+    #
+    # typing.stop()
 
 
 def gameplay(SCREEN):
@@ -216,18 +239,9 @@ def gameplay(SCREEN):
     WHITE = (255, 255, 255)
     RED = (255, 0, 0)
 
-    # Load images
-    # squirrel_img = pygame.image.load("LoverBoy.png").convert_alpha()
-    # image = pygame.image.load("Bg Squirrel.png").convert_alpha()
-    # bg_image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    # cloud_img = pygame.image.load("Cloud.png").convert_alpha()
-    # image2 = pygame.image.load("rolling bg.png").convert_alpha()
-    # roll_bg = pygame.transform.scale(image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
     squirrel_img = pygame.image.load("LoverBoy.png").convert_alpha()
     image = pygame.image.load("Bg Squirrel.png").convert_alpha()
     bg_image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    # cloud_img = pygame.image.load("Cloud.png").convert_alpha()
     image2 = pygame.image.load("rolling bg.png").convert_alpha()
     roll_bg = pygame.transform.scale(image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -251,7 +265,7 @@ def gameplay(SCREEN):
             # platform.rect = platform.get_rect()
             # platform.rect.center = (200, 220)
             window.blit(image, (cloud_list[j][0], cloud_list[j][1]))
-            pygame.draw.rect(window, 'grey', platform)
+            # pygame.draw.rect(window, 'grey', platform)
             platforms.append(platform)
 
         return platforms
@@ -294,16 +308,6 @@ def gameplay(SCREEN):
             if self.rect.right + dx > SCREEN_WIDTH:
                 dx = SCREEN_WIDTH - self.rect.right
 
-            # Check collision with clouds
-            # for platform in platform_group:
-            #     # Collision in the y direction
-            #     if platform.rect.colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
-            #         # Check if above the platform
-            #         if self.rect.bottom < platform.rect.centery:
-            #             if self.vel_y > 0:
-            #                 self.rect.bottom = platform.rect.top
-            #                 dy = 0
-            #                 self.vel_y = -20
             cloud_platforms = draw_clouds(clouds, cloud_images)
             for platform in cloud_platforms:
                 if self.rect.colliderect(platform):
@@ -313,9 +317,7 @@ def gameplay(SCREEN):
 
 
             # # Check collision with ground
-            # if self.rect.bottom + dy > SCREEN_HEIGHT + 20:
-            #     dy = 0
-            #     self.vel_y = -20
+
             if self.rect.bottom + dy > SCREEN_HEIGHT - 80:
                 dy = 0
                 self.vel_y = -20
@@ -334,45 +336,11 @@ def gameplay(SCREEN):
 
         def draw(self):
             SCREEN.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.x - 215, self.rect.y - 150))
-            pygame.draw.rect(SCREEN, WHITE, self.rect, 2)
+            # pygame.draw.rect(SCREEN, WHITE, self.rect, 2)
 
-    # Platform class
-    # class Platform(pygame.sprite.Sprite):
-    #     def __init__(self, x, y, width):
-    #         pygame.sprite.Sprite.__init__(self)
-    #         self.image = pygame.transform.scale(cloud_img, (width, 500))
-    #         self.rect = self.image.get_rect()
-    #         self.rect.center = (x, y)
-    #         self.rect.x = x
-    #         self.rect.y = y
-    #
-    #     def update(self, scroll):
-    #         # Update platform's vertical position
-    #         self.rect.y += scroll
-    #
-    #         # Check if platform has gone off the screen
-    #         if self.rect.top > SCREEN_HEIGHT:
-    #             self.kill()
-    #
-    #     def draw(self):
-    #         SCREEN.blit(self.image, self.rect)
-    #         pygame.draw.rect(SCREEN, RED, self.rect)
 
-    # Squirrel instance
     LoverBoy = Squirrel(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 150)
 
-    # Create sprite groups
-    # platform_group = pygame.sprite.Group()
-    # platform = None
-
-    #
-    # # Create temporary clouds
-    # for p in range(MAX_PLATFORMS):
-    #     p_w = random.randint(350, 700)
-    #     p_x = random.randint(0, SCREEN_WIDTH - p_w)
-    #     p_y = p * random.randint(80, 120)
-    #     platform = Platform(p_x, p_y, p_w)
-    #     platform_group.add(platform)
 
     # Game loop
     run = True
@@ -389,25 +357,42 @@ def gameplay(SCREEN):
 
         cloud_platforms = draw_clouds(clouds, cloud_images)
 
-        # # Generate platforms
-        # if len(platform_group) < MAX_PLATFORMS:
-        #     p_w = random.randint(350, 700)
-        #     p_x = random.randint(0, SCREEN_WIDTH - p_w)
-        #     p_y = platform.rect.y - random.randint(80, 120)
-        #     platform = Platform(p_x, p_y, p_w)
-        #     platform_group.add(platform)
 
-        # Update platforms
-        # platform_group.update(scroll)
-
-        # Draw sprites
-        # platform_group.draw(SCREEN)
         LoverBoy.draw()
+
+        off_button = Button(image=pygame.image.load("off.png"), pos=(160, 50),
+                             text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        home_button = Button(image=pygame.image.load("home.png"), pos=(100, 50),
+                            text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        before_button = Button(image=pygame.image.load("before.png"), pos=(40, 50),
+                            text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+
+
+        off_button.update(SCREEN)
+        home_button.update(SCREEN)
+        before_button.update(SCREEN)
+
+
 
         # Event handler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                click.play()
+                if off_button.checkForInput(pygame.mouse.get_pos()):
+                    pygame.quit()
+                    sys.exit()
+                elif home_button.checkForInput(pygame.mouse.get_pos()):
+                    main_menu()
+                elif before_button.checkForInput(pygame.mouse.get_pos()):
+                    next()
+
+
+
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+        # Blit custom cursor image at mouse position
+        SCREEN.blit(CS_IMG, MENU_MOUSE_POS)
 
         # Update display window
         pygame.display.update()
