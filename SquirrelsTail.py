@@ -164,7 +164,7 @@ def next():
 
         # SCREEN.fill("black")
         SCREEN.blit(bg2, (0, 0))
-        SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
+        # SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
 
         if counter < speed * len(message[-1]):
             counter += 1
@@ -196,7 +196,7 @@ def gameplay(SCREEN):
     SCREEN_HEIGHT = 750
 
     # Create game window
-    # SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     # pygame.display.set_caption("A Squirrel's Tail")
 
     # Set frame rate
@@ -215,10 +215,17 @@ def gameplay(SCREEN):
     RED = (255, 0, 0)
 
     # Load images
+    # squirrel_img = pygame.image.load("LoverBoy.png").convert_alpha()
+    # image = pygame.image.load("Bg Squirrel.png").convert_alpha()
+    # bg_image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    # cloud_img = pygame.image.load("Cloud.png").convert_alpha()
+    # image2 = pygame.image.load("rolling bg.png").convert_alpha()
+    # roll_bg = pygame.transform.scale(image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
     squirrel_img = pygame.image.load("LoverBoy.png").convert_alpha()
     image = pygame.image.load("Bg Squirrel.png").convert_alpha()
     bg_image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    cloud_img = pygame.image.load("Cloud.png").convert_alpha()
+    # cloud_img = pygame.image.load("Cloud.png").convert_alpha()
     image2 = pygame.image.load("rolling bg.png").convert_alpha()
     roll_bg = pygame.transform.scale(image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -226,6 +233,28 @@ def gameplay(SCREEN):
     def draw_bg(bg_scroll):
         SCREEN.blit(bg_image, (0, 0 + bg_scroll))
         SCREEN.blit(roll_bg, (0, -650 + bg_scroll))
+
+    clouds = [[500, 100, 1], [750, 330, 2], [350, 450, 3]]
+    cloud_images = []
+    for i in range(1, 4):
+        img = pygame.image.load(f'Cloud{i}.png')
+        cloud_images.append(img)
+
+    def draw_clouds(cloud_list, images):
+        platforms = []
+        for j in range(len(cloud_list)):
+            image = images[cloud_list[j][2] - 1]
+            image = pygame.transform.scale(image, (450, 250))
+            platform = pygame.rect.Rect((cloud_list[j][0] + 165, cloud_list[j][1] + 120), (120, 20))
+            # platform.rect = platform.get_rect()
+            # platform.rect.center = (200, 220)
+            window.blit(image, (cloud_list[j][0], cloud_list[j][1]))
+            pygame.draw.rect(window, 'grey', platform)
+            platforms.append(platform)
+
+        return platforms
+
+
 
     # Squirrel class
     class Squirrel():
@@ -264,18 +293,28 @@ def gameplay(SCREEN):
                 dx = SCREEN_WIDTH - self.rect.right
 
             # Check collision with clouds
-            for platform in platform_group:
-                # Collision in the y direction
-                if platform.rect.colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
-                    # Check if above the platform
-                    if self.rect.bottom < platform.rect.centery:
-                        if self.vel_y > 0:
-                            self.rect.bottom = platform.rect.top
-                            dy = 0
-                            self.vel_y = -20
+            # for platform in platform_group:
+            #     # Collision in the y direction
+            #     if platform.rect.colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+            #         # Check if above the platform
+            #         if self.rect.bottom < platform.rect.centery:
+            #             if self.vel_y > 0:
+            #                 self.rect.bottom = platform.rect.top
+            #                 dy = 0
+            #                 self.vel_y = -20
+            cloud_platforms = draw_clouds(clouds, cloud_images)
+            for platform in cloud_platforms:
+                if self.rect.colliderect(platform):
+                    if self.vel_y > 0:  # If falling
+                        self.rect.bottom = platform.top
+                        self.vel_y = -20
 
-            # Check collision with ground
-            if self.rect.bottom + dy > SCREEN_HEIGHT + 20:
+
+            # # Check collision with ground
+            # if self.rect.bottom + dy > SCREEN_HEIGHT + 20:
+            #     dy = 0
+            #     self.vel_y = -20
+            if self.rect.bottom + dy > SCREEN_HEIGHT - 80:
                 dy = 0
                 self.vel_y = -20
 
@@ -296,42 +335,42 @@ def gameplay(SCREEN):
             pygame.draw.rect(SCREEN, WHITE, self.rect, 2)
 
     # Platform class
-    class Platform(pygame.sprite.Sprite):
-        def __init__(self, x, y, width):
-            pygame.sprite.Sprite.__init__(self)
-            self.image = pygame.transform.scale(cloud_img, (width, 500))
-            self.rect = self.image.get_rect()
-            self.rect.center = (x, y)
-            self.rect.x = x
-            self.rect.y = y
-
-        def update(self, scroll):
-            # Update platform's vertical position
-            self.rect.y += scroll
-
-            # Check if platform has gone off the screen
-            if self.rect.top > SCREEN_HEIGHT:
-                self.kill()
-
-        def draw(self):
-            SCREEN.blit(self.image, self.rect)
-            pygame.draw.rect(SCREEN, RED, self.rect)
+    # class Platform(pygame.sprite.Sprite):
+    #     def __init__(self, x, y, width):
+    #         pygame.sprite.Sprite.__init__(self)
+    #         self.image = pygame.transform.scale(cloud_img, (width, 500))
+    #         self.rect = self.image.get_rect()
+    #         self.rect.center = (x, y)
+    #         self.rect.x = x
+    #         self.rect.y = y
+    #
+    #     def update(self, scroll):
+    #         # Update platform's vertical position
+    #         self.rect.y += scroll
+    #
+    #         # Check if platform has gone off the screen
+    #         if self.rect.top > SCREEN_HEIGHT:
+    #             self.kill()
+    #
+    #     def draw(self):
+    #         SCREEN.blit(self.image, self.rect)
+    #         pygame.draw.rect(SCREEN, RED, self.rect)
 
     # Squirrel instance
     LoverBoy = Squirrel(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 150)
 
     # Create sprite groups
-    platform_group = pygame.sprite.Group()
+    # platform_group = pygame.sprite.Group()
     # platform = None
 
-
-    # Create temporary clouds
-    for p in range(MAX_PLATFORMS):
-        p_w = random.randint(350, 700)
-        p_x = random.randint(0, SCREEN_WIDTH - p_w)
-        p_y = p * random.randint(80, 120)
-        platform = Platform(p_x, p_y, p_w)
-        platform_group.add(platform)
+    #
+    # # Create temporary clouds
+    # for p in range(MAX_PLATFORMS):
+    #     p_w = random.randint(350, 700)
+    #     p_x = random.randint(0, SCREEN_WIDTH - p_w)
+    #     p_y = p * random.randint(80, 120)
+    #     platform = Platform(p_x, p_y, p_w)
+    #     platform_group.add(platform)
 
     # Game loop
     run = True
@@ -346,19 +385,21 @@ def gameplay(SCREEN):
             bg_scroll = 25
         draw_bg(bg_scroll)
 
-        # Generate platforms
-        if len(platform_group) < MAX_PLATFORMS:
-            p_w = random.randint(350, 700)
-            p_x = random.randint(0, SCREEN_WIDTH - p_w)
-            p_y = platform.rect.y - random.randint(80, 120)
-            platform = Platform(p_x, p_y, p_w)
-            platform_group.add(platform)
+        cloud_platforms = draw_clouds(clouds, cloud_images)
+
+        # # Generate platforms
+        # if len(platform_group) < MAX_PLATFORMS:
+        #     p_w = random.randint(350, 700)
+        #     p_x = random.randint(0, SCREEN_WIDTH - p_w)
+        #     p_y = platform.rect.y - random.randint(80, 120)
+        #     platform = Platform(p_x, p_y, p_w)
+        #     platform_group.add(platform)
 
         # Update platforms
-        platform_group.update(scroll)
+        # platform_group.update(scroll)
 
         # Draw sprites
-        platform_group.draw(SCREEN)
+        # platform_group.draw(SCREEN)
         LoverBoy.draw()
 
         # Event handler
