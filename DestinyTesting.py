@@ -34,16 +34,20 @@ RED = (255, 0, 0)
 squirrel_img = pygame.image.load("LoverBoy.png").convert_alpha()
 image = pygame.image.load("Bg Squirrel.png").convert_alpha()
 bg_image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
-quit_button = Button(image=pygame.image.load("QuitGameButton.png"), pos=(1200, 400),
-                         text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
-
-cloud_img = pygame.image.load("Cloud.png").convert_alpha()
+# cloud_img = pygame.image.load("Cloud.png").convert_alpha()
 image2 = pygame.image.load("rolling bg.png").convert_alpha()
 roll_bg = pygame.transform.scale(image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
+#quit button and pink arrow to access quit button
+
+cursor_image = pygame.image.load("cursor.png")
+CS_IMG = pygame.transform.scale(cursor_image, (90, 70))
+pygame.mouse.set_visible(False)
+
 # Function to draw background
 def draw_bg(bg_scroll):
+
     window.blit(bg_image, (0, 0 + bg_scroll))
     window.blit(roll_bg, (0, -650 + bg_scroll))
 
@@ -66,6 +70,70 @@ def draw_clouds(cloud_list, images):
         platforms.append(platform)
 
     return platforms
+
+#function for the quit button
+def quit():
+    quit_button = Button(image=pygame.image.load("QuitGameButton.png"), pos=(50, 50),
+                         text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+
+    play_back2 = Button(image=None, pos=(170, 510),
+                        text_input="BACK", font=get_font(60), base_color="White", hovering_color="Yellow")
+    play_next2 = Button(image=None, pos=(1200, 510),
+                        text_input="NEXT", font=get_font(60), base_color="White", hovering_color="Pink")
+
+    script_bg = pygame.image.load("newScriptBG.png")
+    bg2 = pygame.transform.scale(script_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    message = ["Use the left & right arrows to navigate, spacebar/up arrow to jump, & don't fall!"]
+
+    font = get_font(35)
+
+    text_width, text_height = font.size(message[0])
+    text_x = (SCREEN_WIDTH - text_width) // 2
+    text_y = (SCREEN_HEIGHT - text_height) // 2
+
+    speed = 2
+    counter = 0
+    done = False
+
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if play_back2.checkForInput(pygame.mouse.get_pos()):
+                    play()
+                elif play_next2.checkForInput(pygame.mouse.get_pos()):
+                    # script_BG = pygame.image.load("treeTrunk.png")
+                    # BG2 = pygame.transform.scale(script_BG,(SCREEN_WIDTH,SCREEN_HEIGHT))
+                    gameplay(SCREEN)
+
+        # SCREEN.fill("black")
+        SCREEN.blit(bg2, (0, 0))
+        # SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
+
+        if counter < speed * len(message[-1]):
+            counter += 1
+
+        text_to_render = "".join([line[:counter // speed] for line in message])
+        text_surface = font.render(text_to_render, True, "white")
+
+        if text_surface.get_width() > SCREEN_WIDTH - 20:  # 20 pixels padding
+            text_y += font.get_linesize()
+
+        SCREEN.blit(text_surface, (text_x, text_y))
+
+        play_back2.changeColor(pygame.mouse.get_pos())
+        play_back2.update(SCREEN)
+        play_next2.changeColor(pygame.mouse.get_pos())
+        play_next2.update(SCREEN)
+
+        SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
+
+        pygame.display.flip()
+
+        pygame.time.Clock().tick(60)
 
 
 # Squirrel class
@@ -198,6 +266,8 @@ LoverBoy = Squirrel(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 150)
 #     platform_group.add(platform)
 
 def main_menu():
+    quit_button = Button(image=pygame.image.load("QuitGameButton.png"), pos=(1200, 400),
+                         text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
 #game loops
     run = True
