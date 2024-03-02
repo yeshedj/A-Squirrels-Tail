@@ -4,18 +4,14 @@ import os
 from SquirrelsButtons import Button
 from spritesheet import SpriteSheet
 from enemy import Enemy
-from pygame import mixer
-
-
 
 pygame.init()
 
-click = pygame.mixer.Sound("wink.mp3")
+click = pygame.mixer.Sound("assets/wink.mp3")
 # typing = pygame.mixer.Sound("typing.mp3")
 
-
 pygame.mixer.init()
-pygame.mixer.music.load("fun.mp3")
+pygame.mixer.music.load("assets/fun.mp3")
 pygame.mixer.music.play(-1)
 
 SCREEN_WIDTH = 1400
@@ -25,7 +21,7 @@ SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Squirrel's Tail")
 
 
-cursor_image = pygame.image.load("cursor.png")
+cursor_image = pygame.image.load("assets/cursor.png")
 CS_IMG = pygame.transform.scale(cursor_image, (90, 70))
 
 pygame.mouse.set_visible(False)
@@ -37,16 +33,16 @@ def get_font(size):
 
 def main_menu():
     # pygame.mixer.music.play(-1)
-    original_bg = pygame.image.load("love is in the air.png")
+    original_bg = pygame.image.load("assets/love is in the air.png")
     bg = pygame.transform.scale(original_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     menu_text = get_font(80).render("A SQUIRREL'S TAIL", True, "#b68f40")
     menu_rect = menu_text.get_rect(center=(700, 180))
 
-    play_button = Button(image=pygame.image.load("PlayGameButton.png"), pos=(200, 400), text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+    play_button = Button(image=pygame.image.load("assets/PlayGameButton.png"), pos=(200, 400), text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
     # quit_button = Button(image=pygame.image.load("QuitGameButton.png"), pos=(1200, 400), text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
-    option_button = Button(image=pygame.image.load("option.png"), pos=(1200, 400), text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+    option_button = Button(image=pygame.image.load("assets/option.png"), pos=(1200, 400), text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
     while True:
         for event in pygame.event.get():
@@ -61,9 +57,6 @@ def main_menu():
                 elif option_button.checkForInput(pygame.mouse.get_pos()):
                     click.play()
                     option()
-                # elif quit_button.checkForInput(pygame.mouse.get_pos()):
-                #     pygame.quit()
-                #     sys.exit()
 
             SCREEN.blit(bg, (0, 0))
 
@@ -80,7 +73,7 @@ def main_menu():
 
 def option():
     option_back = Button(image=None, pos=(170, 510), text_input="BACK", font=get_font(60), base_color="White", hovering_color="Yellow")
-    option_bg = pygame.image.load("optionBG.png")
+    option_bg = pygame.image.load("assets/optionBG.png")
     op_bg = pygame.transform.scale(option_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     message = ["P.S. Happy Valentine's Day you cutie!"]
@@ -95,9 +88,6 @@ def option():
 
     while True:
         for event in pygame.event.get():
-            # if event.type == pygame.QUIT:
-            #     pygame.quit()
-            #     sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if option_back.checkForInput(pygame.mouse.get_pos()):
                     click.play()
@@ -128,14 +118,13 @@ def option():
         pygame.time.Clock().tick(60)
 
 
-
 def play():
     play_back = Button(image=None, pos=(170, 510),
                        text_input="BACK", font=get_font(60), base_color="White", hovering_color="Yellow")
     play_next = Button(image=None, pos=(1190, 510),
                        text_input="NEXT", font=get_font(60), base_color="White", hovering_color="Pink")
 
-    script_bg = pygame.image.load("newScriptBG.png")
+    script_bg = pygame.image.load("assets/newScriptBG.png")
     bg2 = pygame.transform.scale(script_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     message = ["Your squirrel beloved is at the top! Climb as high as you can to try & reunite!"]
@@ -193,13 +182,6 @@ def play():
 
         pygame.time.Clock().tick(60)
 
-
-
-
-
-
-
-
 def next():
 
     play_back2 = Button(image=None, pos=(170, 510),
@@ -207,7 +189,7 @@ def next():
     play_next2 = Button(image=None, pos=(1190, 510),
                         text_input="START", font=get_font(60), base_color="White", hovering_color="Pink")
 
-    script_bg = pygame.image.load("newScriptBG.png")
+    script_bg = pygame.image.load("assets/newScriptBG.png")
     bg2 = pygame.transform.scale(script_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     message = ["Use the left & right arrows to navigate & be careful not to fall!"]
@@ -236,17 +218,11 @@ def next():
                     play()
                     # typing.stop()
                 elif play_next2.checkForInput(pygame.mouse.get_pos()):
-                    # script_BG = pygame.image.load("treeTrunk.png")
-                    # BG2 = pygame.transform.scale(script_BG,(SCREEN_WIDTH,SCREEN_HEIGHT))
                     click.play()
                     gameplay(SCREEN)
                     # typing.stop()
 
-
-
-        # SCREEN.fill("black")
         SCREEN.blit(bg2, (0, 0))
-        # SCREEN.blit(CS_IMG, pygame.mouse.get_pos())
 
         if counter < speed * len(message[-1]):
             counter += 1
@@ -273,7 +249,6 @@ def next():
     #         break
     #
     # typing.stop()
-
 
 def gameplay(SCREEN):
     SCREEN_WIDTH = 400
@@ -313,15 +288,12 @@ def gameplay(SCREEN):
     font_big = pygame.font.SysFont('Lucida Sans', 24)
 
     # load images
-    squirrel_img = pygame.image.load("LoverBoy.png").convert_alpha()
-    image = pygame.image.load("rolling bg.png").convert_alpha()
+    squirrel_img = pygame.image.load("assets/LoverBoy.png").convert_alpha()
+    image = pygame.image.load("assets/rolling bg.png").convert_alpha()
     bg_image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    platform_img = pygame.image.load("wood.png").convert_alpha()
-    # image2 = pygame.image.load("rolling bg.png").convert_alpha()
-    # roll_bg = pygame.transform.scale(image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    # bird spritesheet
-    bird_sheet_img = pygame.image.load('bird.png').convert_alpha()
+    platform_img = pygame.image.load("assets/wood.png").convert_alpha()
+    bird_sheet_img = pygame.image.load("assets/bird.png").convert_alpha()
     bird_sheet = SpriteSheet(bird_sheet_img)
 
     # function for outputting text onto the screen
@@ -552,16 +524,8 @@ def gameplay(SCREEN):
                         file.write(str(high_score))
                 run = False
 
-
-
-
         pygame.display.update()
 
     pygame.quit()
 
-
-
-
 main_menu()
-
-
