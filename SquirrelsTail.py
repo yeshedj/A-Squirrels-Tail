@@ -527,5 +527,6 @@ def gameplay(SCREEN):
         pygame.display.update()
 
     pygame.quit()
+    sys.exit()
 
 main_menu()
