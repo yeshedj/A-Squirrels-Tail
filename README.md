@@ -1,4 +1,4 @@
-# Cupid's Jam
+# A Squirrel's Tail
 
 As part of a game jam, renamed Cupid's Jam, organized by the Game Devs at Mac student organization at Macalester College, we created a game from scratch on a Valentine's Day/romance theme. 
 
