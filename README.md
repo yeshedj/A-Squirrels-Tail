@@ -34,4 +34,4 @@ Enjoy 😎🐿️
 
 ## Contributions
 
-By [@RamatoulayeBah28](https://github.com/RamatoulayeBah28), [@DestinyOps](https://github.com/DestinyOps) , and [@yeshedj](https://github.com/yeshedj)
+By Ramatoulaye Bah ([@RamatoulayeBah28](https://github.com/RamatoulayeBah28)), Destiny Osemwengie ([@DestinyOps](https://github.com/DestinyOps)) , and Yeshe Jangchup ([@yeshedj](https://github.com/yeshedj))
