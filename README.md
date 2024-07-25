@@ -2,6 +2,9 @@
 
 As part of a game jam, renamed Cupid's Jam, organized by the Game Devs at Mac student organization at Macalester College, we created a game from scratch on a Valentine's Day/romance theme. 
 
+<img src="Squirrel Start Screen.png" width = "60%">
+
+
 Our game, _A Squirrel's Tail_, has been developed in Python programming language using the Pygame library to create a platform game where one squirrel is at the bottom of the screen and jumps on the wooden platforms to climb as high as possible toward its lover at the top without falling. The game includes obstacles and moving platforms that are also randomly generated for each round to keep the game interesting.
 
 We had 48H to complete the game, therefore, here are some modifications we would've added if we had more time:
