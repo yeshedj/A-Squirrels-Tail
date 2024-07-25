@@ -14,7 +14,7 @@ We had 48H to complete the game, therefore, here are some modifications we would
 - Add a cursor, a pause, quit, restart, and menu button to the Game window
 - Design the Game Over screen to something related to the theme
 
-# How To Play
+## How To Play
 
 Clone the git repository:
 https://github.com/RamatoulayeBah28/CupidJam
@@ -29,6 +29,6 @@ Play the game
 
 Enjoy 😎🐿️
 
-# Contributions
+## Contributions
 
-By Ramatoulaye Bah, Yeshe Jangchup and Destiny Osemwengie
+By [@RamatoulayeBah28](https://github.com/RamatoulayeBah28), [@DestinyOps](https://github.com/DestinyOps) , and [@yeshedj](https://github.com/yeshedj)
